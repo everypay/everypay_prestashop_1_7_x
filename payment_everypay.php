@@ -120,7 +120,7 @@ class Payment_Everypay extends PaymentModule
 			else
 			{
 				Configuration::updateValue('EVERYPAY_SANDBOX_MODE', $sandbox);
-				Configuration::updateValue('EVERYPAY_SECRET_KEY', $sk);
+				Configuration::updateValue('EVERYPAY_PUBLIC_KEY', $pk);
 				Configuration::updateValue('EVERYPAY_SECRET_KEY', $sk);
 				Configuration::updateValue('EVERYPAY_INSTALLMENTS', $inst);
 				$output .= $this->displayConfirmation($this->l('Settings updated'));
