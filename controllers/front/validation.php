@@ -57,47 +57,55 @@ class Payment_EverypayValidationModuleFrontController extends ModuleFrontControl
             die($this->module->l('This payment method is not available.', 'validation'));
         }
 
-    		$ctn = $_REQUEST['everypayToken'];
+        $ctn = $_REQUEST['everypayToken'];
 
-    		if(substr($ctn, 0, 4) !== "ctn_"){
-    			die($this->module->l('Unknown payment response. Please contact the website administrator.', 'validation'));
-    		}
+        if(substr($ctn, 0, 4) !== "ctn_"){
+            die($this->module->l('Unknown payment response. Please contact the website administrator.', 'validation'));
+        }
 
-    		// is cURL installed yet?
-    		if (!function_exists('curl_init')){
-    			die($this->module->l('PHP cURL module is not installed. Please contact the website administrator.', 'validation'));
-    		}
+        // is cURL installed yet?
+        if (!function_exists('curl_init')){
+            die($this->module->l('PHP cURL module is not installed. Please contact the website administrator.', 'validation'));
+        }
 
-            $customer = new Customer($cart->id_customer);
-            if (!Validate::isLoadedObject($customer))
-                Tools::redirect('index.php?controller=order&step=1');
+        $customer = new Customer($cart->id_customer);
+        if (!Validate::isLoadedObject($customer))
+            Tools::redirect('index.php?controller=order&step=1');
 
-            $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
+        $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
 
-    		if(Configuration::get('EVERYPAY_SANDBOX_MODE'))
-    			Everypay::$isTest = true;
+        if(Configuration::get('EVERYPAY_SANDBOX_MODE'))
+            Everypay::$isTest = true;
 
-    		Everypay::setApiKey(Configuration::get('EVERYPAY_SECRET_KEY'));
+        Everypay::setApiKey(Configuration::get('EVERYPAY_SECRET_KEY'));
 
-    		// exclude notices from the following exception catch
-    		error_reporting(E_ERROR | E_WARNING | E_PARSE);
+        // exclude notices from the following exception catch
+        error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
-    		try {
-    			$payment = Payment::create(array(
-    			  "amount" => $total*100,
-    			  "currency" => "eur",
-    			  "token" => $ctn,
-    			  "description" => Configuration::get('PS_SHOP_NAME').' - Order #'.$cart->id_address_invoice,
-            "max_installments" => $this->module->_calcInstallments($total)
-    			));
-          $this->module->validateOrder($cart->id, 2, $total, $this->module->displayName, NULL, array(), $cart->id_currency, false, $customer->secure_key);
-          Tools::redirect('index.php?controller=order-confirmation&id_cart='.$cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key);
-    		} catch (Exception $e) {
-    			$this->context->smarty->assign([
-    			    'error' => $e->getMessage()
-    			]);
-          $this->setTemplate('module:payment_everypay/views/templates/front/payment_error.tpl');
-    			$this->module->validateOrder($cart->id, 8, $total, $this->module->displayName, $e->getMessage(), array(), $cart->id_currency, false, $customer->secure_key);
-    		}
+        try {
+
+            $payment = Payment::create(array(
+                "amount" => $total*100,
+                "currency" => "eur",
+                "token" => $ctn,
+                "description" => Configuration::get('PS_SHOP_NAME').' - Order #'.$cart->id_address_invoice,
+                "max_installments" => $this->module->_calcInstallments($total)
+            ));
+
+            $this->module->validateOrder($cart->id, 2, $total, $this->module->displayName, NULL, array(), $cart->id_currency, false, $customer->secure_key);
+            Tools::redirect('index.php?controller=order-confirmation&id_cart='.$cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key);
+
+        } catch (Exception $e) {
+
+            $this->context->smarty->assign(['error' => $e->getMessage()]);
+
+            $controller = Configuration::get('PS_ORDER_PROCESS_TYPE') ? 'order-opc.php' : 'order.php';
+            $location = $this->context->link->getPageLink($controller).(strpos($controller, '?') !== false ? '&' : '?').
+                'step=3&error='.$e->getCode();
+
+            Tools::redirect($location);
+
+        }
+
     }
 }
