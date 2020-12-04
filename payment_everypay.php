@@ -102,13 +102,16 @@ class Payment_Everypay extends PaymentModule
 
     public function hookDisplayHeader()
     {
+        if ($this->context->controller->php_self != 'oder')
+            return;
+
         $this->context->controller->addCSS($this->_path.'views/css/everypay_styles.css', 'all');
         $this->context->controller->addJS($this->_path.'views/js/everypay.js', 'all');
 
         if (Configuration::get('EVERYPAY_SANDBOX_MODE'))
-             $this->context->controller->registerJavascript('everypay_iframe', 'https://sandbox-js.everypay.gr/v3', array('media' => 'all', 'priority' => 0, 'inline' => true, 'server' => 'remote', 'position' => 'head'));
+             $this->context->controller->registerJavascript('everypay_iframe', 'https://sandbox-js.everypay.gr/v3', array('media' => 'all', 'priority' => 1, 'inline' => true, 'server' => 'remote', 'position' => 'head'));
         else
-            $this->context->controller->registerJavascript('everypay_iframe', 'https://js.everypay.gr/v3', array('media' => 'all', 'priority' => 0, 'inline' => true, 'server' => 'remote', 'position' => 'head'));
+            $this->context->controller->registerJavascript('everypay_iframe', 'https://js.everypay.gr/v3', array('media' => 'all', 'priority' => 1, 'inline' => true, 'server' => 'remote', 'position' => 'head'));
 
     }
 
@@ -259,10 +262,13 @@ class Payment_Everypay extends PaymentModule
             return;
         }
 
+        $billingAddress = (
+            new Address(intval($params['cart']->id_address_delivery))
+        )->address1;
 
         $paymentOpt = new PaymentOption();
         $paymentOpt->setCallToActionText($this->l('Pay with Credit/Debit Card'))
-                       ->setForm($this->generateForm())
+                       ->setForm($this->generateForm($billingAddress))
                        ->setAdditionalInformation($this->context->smarty->fetch('module:payment_everypay/views/templates/front/payment_infos.tpl'))
 					   ->setBinary(true)
                     ->setLogo($this->_path.'everypay_logo.png');
@@ -285,20 +291,22 @@ class Payment_Everypay extends PaymentModule
         return false;
     }
 
-    protected function generateForm()
+    protected function generateForm($billingAddress)
     {
 		$cart = $this->context->cart;
 		$total = (float) $cart->getOrderTotal(true, Cart::BOTH);
 
 		$lang = ($this->context->language->iso_code == "el") ? "el" : "en";
+
         $this->context->smarty->assign([
             'action' => $this->context->link->getModuleLink($this->name, 'validation', array(), true),
-			'sandbox' => (int) Configuration::get('EVERYPAY_SANDBOX_MODE'),
-			'desc' => Configuration::get('PS_SHOP_NAME').' - Order #'.$cart->id_address_invoice,
-			'locale' => $lang,
-			'pk' => Configuration::get('EVERYPAY_PUBLIC_KEY'),
-			'installments' => $this->_calcInstallments($total),
-			'total' => $total * 100
+            'pk' => Configuration::get('EVERYPAY_PUBLIC_KEY'),
+            'amount' => $total * 100,
+            'locale' => $lang,
+            'txnType' => 'tds',
+            'hidden' => true,
+            'installments' => $this->_calcInstallments($total),
+            'billingAddress' => $billingAddress
         ]);
 
         return $this->context->smarty->fetch('module:payment_everypay/views/templates/front/payment_form.tpl');
