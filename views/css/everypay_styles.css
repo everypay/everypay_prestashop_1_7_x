@@ -1,7 +1,41 @@
 #everypay_logo {
     max-width: 12vw;
-    height: 3vh;
+    height: 2em;
 }
+
+#everypay_btn {
+    -webkit-tap-highlight-color: transparent;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    box-sizing: inherit;
+    font: inherit;
+    margin: 0;
+    overflow: visible;
+    touch-action: manipulation;
+    display: inline-block;
+    line-height: 1.25;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
+    font-size: 1rem;
+    border-radius: 0;
+    box-shadow: 2px 2px 4px 0 rgba(0,0,0,.2);
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: .5rem 1.25rem;
+    text-decoration: none;
+    outline: 0;
+    background-image: none;
+    color: #fff;
+    background-color: #1e788c;
+    border-color: transparent;
+    width: 30vw;
+}
+
+
 
 @media only screen and (max-device-width: 640px) {
     #everypay_logo label img {
