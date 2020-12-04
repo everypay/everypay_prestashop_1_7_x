@@ -59,7 +59,7 @@ class Payment_Everypay extends PaymentModule
     {
         $this->name = 'payment_everypay';
         $this->tab = 'payments_gateways';
-        $this->version = '1.0.0';
+        $this->version = '2.0.0';
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
         $this->author = 'Everypay';
         $this->controllers = array('validation');
@@ -94,10 +94,23 @@ class Payment_Everypay extends PaymentModule
 
     public function install()
     {
-        if (!parent::install() || !$this->registerHook('paymentOptions') || !$this->registerHook('paymentReturn')) {
+        if (!parent::install() || !$this->registerHook('paymentOptions') || !$this->registerHook('paymentReturn') || !$this->registerHook('displayHeader')) {
             return false;
         }
         return true;
+    }
+
+    public function hookDisplayHeader()
+    {
+        $this->context->controller->addCSS($this->_path.'views/css/everypay_styles.css', 'all');
+        $this->context->controller->addJS($this->_path.'views/js/everypay.js', 'all');
+
+        if (Configuration::get('EVERYPAY_SANDBOX_MODE'))
+             $this->context->controller->registerJavascript('everypay_iframe', 'https://sandbox-js.everypay.gr/v3', array('media' => 'all', 'priority' => 10, 'inline' => true, 'server' => 'remote'));
+        else
+            $this->context->controller->registerJavascript('everypay_iframe', 'https://js.everypay.gr/v3', array('media' => 'all', 'priority' => 10, 'inline' => true, 'server' => 'remote'));
+
+
     }
 
 	/**
@@ -235,6 +248,8 @@ class Payment_Everypay extends PaymentModule
 		return $helper->generateForm($fields_form);
 	}
 
+
+
     public function hookPaymentOptions($params)
     {
         if (!$this->active) {
@@ -245,11 +260,13 @@ class Payment_Everypay extends PaymentModule
             return;
         }
 
+
         $paymentOpt = new PaymentOption();
         $paymentOpt->setCallToActionText($this->l('Pay with Credit/Debit Card'))
                        ->setForm($this->generateForm())
                        ->setAdditionalInformation($this->context->smarty->fetch('module:payment_everypay/views/templates/front/payment_infos.tpl'))
-					   ->setBinary(true);
+					   ->setBinary(true)
+                    ->setLogo($this->_path.'everypay_logo.png');
 
         return array($paymentOpt);
     }
@@ -284,6 +301,7 @@ class Payment_Everypay extends PaymentModule
 			'installments' => $this->_calcInstallments($total),
 			'total' => $total * 100
         ]);
+
         return $this->context->smarty->fetch('module:payment_everypay/views/templates/front/payment_form.tpl');
     }
 
