@@ -102,7 +102,7 @@ class Payment_Everypay extends PaymentModule
 
     public function hookDisplayHeader()
     {
-        if ($this->context->controller->php_self != 'oder')
+        if ($this->context->controller->php_self != 'order')
             return;
 
         $this->context->controller->addCSS($this->_path.'views/css/everypay_styles.css', 'all');
