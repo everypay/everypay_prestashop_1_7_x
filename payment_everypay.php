@@ -106,10 +106,9 @@ class Payment_Everypay extends PaymentModule
         $this->context->controller->addJS($this->_path.'views/js/everypay.js', 'all');
 
         if (Configuration::get('EVERYPAY_SANDBOX_MODE'))
-             $this->context->controller->registerJavascript('everypay_iframe', 'https://sandbox-js.everypay.gr/v3', array('media' => 'all', 'priority' => 10, 'inline' => true, 'server' => 'remote'));
+             $this->context->controller->registerJavascript('everypay_iframe', 'https://sandbox-js.everypay.gr/v3', array('media' => 'all', 'priority' => 0, 'inline' => true, 'server' => 'remote', 'position' => 'head'));
         else
-            $this->context->controller->registerJavascript('everypay_iframe', 'https://js.everypay.gr/v3', array('media' => 'all', 'priority' => 10, 'inline' => true, 'server' => 'remote'));
-
+            $this->context->controller->registerJavascript('everypay_iframe', 'https://js.everypay.gr/v3', array('media' => 'all', 'priority' => 0, 'inline' => true, 'server' => 'remote', 'position' => 'head'));
 
     }
 
