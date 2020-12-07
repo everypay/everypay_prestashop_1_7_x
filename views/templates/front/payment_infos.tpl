@@ -22,6 +22,17 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 *}
+{if isset($smarty.get.error)}
+  <div class="alert alert-danger" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <i class="material-icons">error_outline</i><p class="alert-text" id="everypay_error"></p>
+  </div>
+  <script>
+    showEverypayError({$smarty.get.error|escape:'htmlall':'UTF-8'});
+  </script>
+{/if}
 
 <section>
   <p>{l s='Notice: None of your sensitive info are being stored in our website to comply with the PCI-DSS rules' mod='payment_everypay'}</p>
