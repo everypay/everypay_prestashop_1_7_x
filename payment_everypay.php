@@ -105,8 +105,13 @@ class Payment_Everypay extends PaymentModule
         if ($this->context->controller->php_self != 'order')
             return;
 
-        $this->context->controller->addCSS($this->_path.'views/css/everypay_styles.css', 'all');
-        $this->context->controller->addJS($this->_path.'views/js/everypay.js', 'all');
+        $this->context->controller->registerStylesheet('everypay_modal_css', 'modules/'.$this->name.'/views/css/everypay_modal.css', array('media' => 'all', 'priority' => 0,  'server' => 'local', 'position' => 'head'));
+
+        $this->context->controller->registerStylesheet('everypay_css', 'modules/'.$this->name.'/views/css/everypay_styles.css', array('media' => 'all', 'priority' => 0,  'server' => 'local', 'position' => 'head'));
+
+        $this->context->controller->registerJavascript('everypay_modal_js',  'modules/'.$this->name.'/views/js/everypay_modal.js', array('media' => 'all', 'priority' => 1, 'inline' => false, 'server' => 'local', 'position' => 'head'));
+        $this->context->controller->registerJavascript('everypay_js',  'modules/'.$this->name.'/views/js/everypay.js', array('media' => 'all', 'priority' => 1, 'inline' => false, 'server' => 'local', 'position' => 'head'));
+
 
         if (Configuration::get('EVERYPAY_SANDBOX_MODE'))
              $this->context->controller->registerJavascript('everypay_iframe', 'https://sandbox-js.everypay.gr/v3', array('media' => 'all', 'priority' => 1, 'inline' => true, 'server' => 'remote', 'position' => 'head'));
