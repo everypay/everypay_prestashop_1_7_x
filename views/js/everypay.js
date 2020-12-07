@@ -1,10 +1,17 @@
 
-(function addIDtoEverypayLogo() {
-    let everypayLogo = document.querySelector('.payment-option label img[src="/modules/payment_everypay/everypay_logo.png"]');
-    if (!everypayLogo)
-        everypayLogo = document.querySelector('#payment-option-3-container label img');
-    everypayLogo.setAttribute('id', 'everypay_logo');
-})();
+
+
+
+
+
+    function addIDtoEverypayLogo() {
+        let everypayLogo = document.querySelector('.payment-option label img[src="/modules/payment_everypay/everypay_logo.png"]');
+        if (!everypayLogo)
+            everypayLogo = document.querySelector('#payment-option-3-container label img');
+        try {
+            everypayLogo.setAttribute('id', 'everypay_logo');
+        } catch (e) {console.log(e)}
+    }
 
 
 
@@ -46,3 +53,20 @@ var tosChecker = setInterval(function(){
         document.querySelector('#everypay_btn').setAttribute("disabled", "disabled");
     }
 }, 1000);
+
+
+let calculate_installments = function (max_installments) {
+    var installments = [];
+
+    if (typeof max_installments != 'number' || max_installments > 36)
+        return installments;
+
+    var y = 2;
+    for (let i = 2; i <= max_installments; i += y) {
+        if (i >= 12)
+            y = 12;
+
+        installments.push(i);
+    }
+    return installments;
+}
