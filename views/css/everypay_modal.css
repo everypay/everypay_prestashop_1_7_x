@@ -23,7 +23,8 @@
     border: 1px solid #888;
     min-width: 35vw;
     max-width: 35vw;
-    min-height: 43vh;
+    min-height: 35vh;
+    max-height: 35vh;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     -webkit-animation-name: everypayModalAnimation;
     -webkit-animation-duration: 0.4s;
@@ -49,14 +50,10 @@
 }
 
 #everypay-modal-header span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     min-height: 100%;
     min-width: 2vw;
     max-width: 2vw;
-    margin-right: 1vw;
-    align-self: flex-end;
+    color: gray;
 }
 #everypay-modal-header span:hover, #everypay-modal-header span:focus {
     color: #000;
@@ -79,7 +76,7 @@
     margin: 1vw 0;
 }
 
-#everypay-logo  svg {
+#everypay-logo svg {
     margin-left: 1.2vw;
     height: 3vh;
 }
@@ -94,6 +91,13 @@
 
 #everypay-secure-logos svg {
     height: 100%;
+    min-width: 10vw;
+    max-width: 10vw;
+}
+
+#everypay-secure-logos svg:nth-of-type(2) {
+    min-width: 6vw;
+    max-width: 6vw;
 }
 
 /*  mobile phones */
@@ -113,36 +117,52 @@
     #everypay-logo {
         margin-top: 5vh;
         margin-bottom: 2vh;
-        flex-direction: row;
+        flex-direction: column;
+        height: 10vh;
     }
+
 
     #everypay-secure-logos {
         height: 5vh;
         min-width: 90vw;
     }
 
+    #everypay-secure-logos svg {
+        min-width: 10vw;
+        max-width: 10vw;
+    }
+
+    #everypay-secure-logos svg:nth-of-type(2) {
+        min-width: 18vw;
+        max-width: 18vw;
+    }
+
 }
 /* large screens */
 @media screen and (min-width: 1900px) {
     #everypay-modal-content {
-        min-width: 24vw;
-        max-width: 24vw;
+        min-width: 20vw;
+        max-width: 20vw;
+    }
+
+    #everypay-secure-logos svg {
+        min-width: 6vw;
+        max-width: 6vw;
+    }
+
+    #everypay-secure-logos svg:nth-of-type(2) {
+        min-width: 3vw;
+        max-width: 3vw;
     }
 }
 
 /* landscape mobiles */
-@media only screen and (max-width: 767px) and (orientation: landscape) {
-
+@media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (orientation: landscape) {
     #everypay-modal-content {
         min-width: 60vw;
         max-width: 60vw;
         min-height: 100vh;
-    }
-
-    #everypay-secure-logos {
-        height: 5vw;
-        min-width: 70vw;
-        max-width: 70vw;
+        height: 100%;
     }
 }
 
@@ -154,9 +174,35 @@
         height: 25vh;
     }
 
+    #everypay-modal-header span {
+        margin-right: 1vw;
+    }
+
+    #everypay-logo {
+        margin-bottom: 2vh;
+        margin-top: 2vh;
+        flex-direction: column;
+    }
+
     #everypay-secure-logos {
         height: 4vh;
         min-width: 70vw;
         max-width: 70vw;
+    }
+
+    #everypay-secure-logos svg:nth-of-type(2) {
+        min-width: 8vw;
+        max-width: 8vw;
+    }
+
+}
+/* Tablets  landscape */
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
+    #everypay-modal-content {
+        min-height: 45vh;
+        height: 45vh;
+        min-width: 45vw;
+        max-width: 45vw;
+        margin-bottom: 2vh;
     }
 }
