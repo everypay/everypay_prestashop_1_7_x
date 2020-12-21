@@ -34,9 +34,12 @@
 			amount: {$amount},
 			locale: "{$locale}",
 			data: {
-				billing: { addressLine1: "{$billingAddress}" }
+				billing: {
+					addressLine1: "{$billingAddress}",
+					postalCode: "{$postalCode}",
+					city: "{$city}"
+				}
 			},
-			txnType: 'tds',
 		};
 
 		if ({$installments})
