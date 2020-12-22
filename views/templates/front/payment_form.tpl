@@ -58,13 +58,12 @@
 					modal.destroy();
 					document.getElementById('everypayToken').value = response.token;
 					document.getElementById('everypay-form').submit()
+					document.getElementById("loader-everypay").style.display = 'flex';
 				}
-
 
 				});
 
 		});
 
 	</script>
-
 </form>
