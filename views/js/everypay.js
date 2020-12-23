@@ -61,13 +61,13 @@ var showEverypayError = function (errorCode) {
 
     if (errorCode < 20000)
         errorText = errorTexts.errorMerchant;
-    else if (errorCode >= 20000 && code <= 20003)
+    else if (errorCode >= 20000 && errorCode <= 20003)
         errorText = errorTexts.errorDetails;
     else if (errorCode === 20012)
         errorText = errorTexts.errorDefault;
-    else if (errorCode > 20003 && code < 30000 && code !== 20012)
+    else if (errorCode > 20003 && errorCode < 30000 && errorCode !== 20012)
         errorText = errorTexts.errorCard;
-    else if (errorCode > 30000 && code < 40000)
+    else if (errorCode > 30000 && errorCode < 40000)
         errorText = errorTexts.errorDefault;
     else if (errorCode === 40004)
         errorText = errorTexts.errorAuth;
