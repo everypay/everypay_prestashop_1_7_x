@@ -71,6 +71,8 @@ var showEverypayError = function (errorCode) {
         errorText = errorTexts.errorDefault;
     else if (errorCode === 40004)
         errorText = errorTexts.errorAuth;
+    else
+        errorText = "Υπήρξε κάποιο πρόβλημα. Παρακαλούμε προσπαθήστε ξανά."
 
     if (everypayErrorElement)
         everypayErrorElement.innerHTML = errorText;
