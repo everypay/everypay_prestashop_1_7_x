@@ -83,18 +83,15 @@ class Payment_EverypayValidationModuleFrontController extends ModuleFrontControl
         error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
         try {
-
             $payment = Payment::create(array(
                 "amount" => $total*100,
                 "currency" => "eur",
                 "token" => $ctn,
-                "description" => Configuration::get('PS_SHOP_NAME').' - Order #'.$cart->id_address_invoice,
+                "description" => Configuration::get('PS_SHOP_NAME').' - Order #'.$cart->id,
                 "max_installments" => $this->module->_calcInstallments($total)
             ));
-
             $this->module->validateOrder($cart->id, 2, $total, $this->module->displayName, NULL, array(), $cart->id_currency, false, $customer->secure_key);
             Tools::redirect('index.php?controller=order-confirmation&id_cart='.$cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key);
-
         } catch (Exception $e) {
 
             $this->context->smarty->assign(['error' => $e->getMessage()]);
