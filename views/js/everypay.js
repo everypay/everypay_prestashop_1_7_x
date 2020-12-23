@@ -8,17 +8,28 @@ function addIDtoEverypayLogo() {
      } catch (e) {console.log(e)}
 }
 
-var tosChecker = setInterval(function(){
-    if(document.getElementById("conditions_to_approve[terms-and-conditions]").checked){
-        document.querySelector('#everypay_btn').removeAttribute("disabled");
-        document.querySelector('#everypay_btn').setAttribute('class', 'btn-primary');
-    } else {
-        document.querySelector('#everypay_btn').setAttribute("disabled", "disabled");
-    }
-}, 1000);
+
+(function enableEverypayBtnOnAcceptTermsAndConditions() {
+    setInterval(function(){
+        var acceptTermsAndConditionsButton = document.getElementById("conditions_to_approve[terms-and-conditions]");
+        var everypayButton = document.getElementById('everypay_btn');
+
+        if (!acceptTermsAndConditionsButton || !everypayButton) {
+            return;
+        }
+
+        if (acceptTermsAndConditionsButton.checked){
+            everypayButton.removeAttribute("disabled");
+            everypayButton.setAttribute('class', 'btn-primary');
+        } else {
+            everypayButton.setAttribute("disabled", "disabled");
+        }
+    }, 1000);
+
+})();
 
 
-let calculate_installments = function (max_installments) {
+var calculate_installments = function (max_installments) {
     var installments = [];
 
     if (typeof max_installments != 'number' || max_installments > 36)
@@ -34,17 +45,19 @@ let calculate_installments = function (max_installments) {
     return installments;
 }
 
-let showEverypayError = (errorCode) => {
+var showEverypayError = function (errorCode) {
 
-    let errorText = '';
+    var errorText = '';
 
-    let errorTexts = {
+    var errorTexts = {
         "errorMerchant": "Παρουσιάστηκε κάποιο σφάλμα. Παρακαλούμε επικοινωνήστε με τον έμπορο!",
         "errorDetails": "Τα στοιχεία της κάρτας είναι λανθασμένα!",
         "errorAuth": "Η κάρτα σας δεν έγινε δεκτή. Παρακαλούμε δοκιμάστε άλλη κάρτα!",
         "errorDefault": "Υπήρξε κάποιο πρόβλημα καθώς επεξεργαζόμασταν την κάρτα σας. Δοκιμάστε ξανά η δοκιμάστε με άλλη κάρτα!",
         "errorCard": "Υπήρξε κάποιο πρόβλημα καθώς επεξεργαζόμασταν την κάρτα σας. Δοκιμάστε με άλλη κάρτα!"
     };
+
+    var everypayErrorElement = document.getElementById('everypay_error');
 
     if (errorCode < 20000)
         errorText = errorTexts.errorMerchant;
@@ -59,5 +72,6 @@ let showEverypayError = (errorCode) => {
     else if (errorCode === 40004)
         errorText = errorTexts.errorAuth;
 
-    document.getElementById('everypay_error').innerHTML = errorText;
+    if (everypayErrorElement)
+        everypayErrorElement.innerHTML = errorText;
 }

@@ -24,10 +24,13 @@
 *}
 <form class="payment-card-form" method="POST" action="{$action}" id="everypay-form">
 	<input type="hidden" name="everypayToken" value="" id="everypayToken">
-	<button id="everypay_btn" class="btn btn-primary">Pay with card</button>
+	<button id="everypay_btn" class="btn btn-primary" disabled="disabled">Πληρωμή με κάρτα</button>
 
 	<script>
 		addIDtoEverypayLogo();
+
+		if ("{$locale}" != 'el')
+			document.getElementById('everypay_btn').innerHTML = "Pay with Card";
 
 		let payload = {
 			pk: "{$pk}",
