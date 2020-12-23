@@ -1,0 +1,17 @@
+#everypay_logo {
+    max-width: 12vw;
+    height: 2em;
+}
+
+@media only screen and (max-width: 767px) {
+    #everypay_logo label img {
+        min-width: 50vw;
+        max-width: 50vw;
+        height: 4vh;
+    }
+
+    #everypay_btn {
+        min-width: 80vw;
+        max-width: 80vw;
+    }
+}

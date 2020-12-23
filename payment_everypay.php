@@ -59,7 +59,7 @@ class Payment_Everypay extends PaymentModule
     {
         $this->name = 'payment_everypay';
         $this->tab = 'payments_gateways';
-        $this->version = '1.0.0';
+        $this->version = '2.0.0';
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
         $this->author = 'Everypay';
         $this->controllers = array('validation');
@@ -94,10 +94,30 @@ class Payment_Everypay extends PaymentModule
 
     public function install()
     {
-        if (!parent::install() || !$this->registerHook('paymentOptions') || !$this->registerHook('paymentReturn')) {
+        if (!parent::install() || !$this->registerHook('paymentOptions') || !$this->registerHook('paymentReturn') || !$this->registerHook('displayHeader')) {
             return false;
         }
         return true;
+    }
+
+    public function hookDisplayHeader()
+    {
+        if ($this->context->controller->php_self != 'order')
+            return;
+
+        $this->context->controller->registerStylesheet('everypay_modal_css', 'modules/'.$this->name.'/views/css/everypay_modal.css', array('media' => 'all', 'priority' => 0,  'server' => 'local', 'position' => 'head'));
+
+        $this->context->controller->registerStylesheet('everypay_css', 'modules/'.$this->name.'/views/css/everypay_styles.css', array('media' => 'all', 'priority' => 0,  'server' => 'local', 'position' => 'head'));
+
+        $this->context->controller->registerJavascript('everypay_modal_js',  'modules/'.$this->name.'/views/js/everypay_modal.js', array('media' => 'all', 'priority' => 1, 'inline' => false, 'server' => 'local', 'position' => 'head'));
+        $this->context->controller->registerJavascript('everypay_js',  'modules/'.$this->name.'/views/js/everypay.js', array('media' => 'all', 'priority' => 1, 'inline' => false, 'server' => 'local', 'position' => 'head'));
+
+
+        if (Configuration::get('EVERYPAY_SANDBOX_MODE'))
+             $this->context->controller->registerJavascript('everypay_iframe', 'https://sandbox-js.everypay.gr/v3', array('media' => 'all', 'priority' => 1, 'inline' => true, 'server' => 'remote', 'position' => 'head'));
+        else
+            $this->context->controller->registerJavascript('everypay_iframe', 'https://js.everypay.gr/v3', array('media' => 'all', 'priority' => 1, 'inline' => true, 'server' => 'remote', 'position' => 'head'));
+
     }
 
 	/**
@@ -235,6 +255,8 @@ class Payment_Everypay extends PaymentModule
 		return $helper->generateForm($fields_form);
 	}
 
+
+
     public function hookPaymentOptions($params)
     {
         if (!$this->active) {
@@ -245,11 +267,20 @@ class Payment_Everypay extends PaymentModule
             return;
         }
 
+        $billingData = (
+         new Address(intval($params['cart']->id_address_delivery))
+        );
+
+        $billingAddress = $billingData->address1;
+        $postalCode = $billingData->postcode;
+        $city = $billingData->city;
+
         $paymentOpt = new PaymentOption();
         $paymentOpt->setCallToActionText($this->l('Pay with Credit/Debit Card'))
-                       ->setForm($this->generateForm())
+                       ->setForm($this->generateForm($billingAddress, $postalCode, $city))
                        ->setAdditionalInformation($this->context->smarty->fetch('module:payment_everypay/views/templates/front/payment_infos.tpl'))
-					   ->setBinary(true);
+					   ->setBinary(true)
+                    ->setLogo($this->_path.'everypay_logo.png');
 
         return array($paymentOpt);
     }
@@ -269,21 +300,26 @@ class Payment_Everypay extends PaymentModule
         return false;
     }
 
-    protected function generateForm()
+    protected function generateForm($billingAddress, $postalCode, $city)
     {
 		$cart = $this->context->cart;
 		$total = (float) $cart->getOrderTotal(true, Cart::BOTH);
 
 		$lang = ($this->context->language->iso_code == "el") ? "el" : "en";
+
         $this->context->smarty->assign([
             'action' => $this->context->link->getModuleLink($this->name, 'validation', array(), true),
-			'sandbox' => (int) Configuration::get('EVERYPAY_SANDBOX_MODE'),
-			'desc' => Configuration::get('PS_SHOP_NAME').' - Order #'.$cart->id_address_invoice,
-			'locale' => $lang,
-			'pk' => Configuration::get('EVERYPAY_PUBLIC_KEY'),
-			'installments' => $this->_calcInstallments($total),
-			'total' => $total * 100
+            'pk' => Configuration::get('EVERYPAY_PUBLIC_KEY'),
+            'amount' => $total * 100,
+            'locale' => $lang,
+            'txnType' => 'tds',
+            'hidden' => true,
+            'installments' => $this->_calcInstallments($total),
+            'billingAddress' => $billingAddress,
+            'postalCode' => $postalCode,
+            'city' => $city
         ]);
+
         return $this->context->smarty->fetch('module:payment_everypay/views/templates/front/payment_form.tpl');
     }
 
