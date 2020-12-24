@@ -27,7 +27,6 @@
 	<button id="everypay_btn" class="btn btn-primary" disabled="disabled">Πληρωμή με κάρτα</button>
 
 	<script>
-		addIDtoEverypayLogo();
 
 		if ("{$locale}" != 'el')
 			document.getElementById('everypay_btn').innerHTML = "Pay with Card";

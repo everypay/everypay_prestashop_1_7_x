@@ -279,8 +279,7 @@ class Payment_Everypay extends PaymentModule
         $paymentOpt->setCallToActionText($this->l('Pay with Credit/Debit Card'))
                        ->setForm($this->generateForm($billingAddress, $postalCode, $city))
                        ->setAdditionalInformation($this->context->smarty->fetch('module:payment_everypay/views/templates/front/payment_infos.tpl'))
-					   ->setBinary(true)
-                    ->setLogo($this->_path.'everypay_logo.png');
+					   ->setBinary(true);
 
         return array($paymentOpt);
     }
