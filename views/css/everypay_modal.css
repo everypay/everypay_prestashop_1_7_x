@@ -68,7 +68,6 @@
     justify-content: center;
     align-items: center;
     color: #fff;
-    font-size: 1em;
     margin: 5vh 0;
 }
 #everypay-logo svg {
@@ -130,7 +129,6 @@
     }
     #everypay-logo {
         height: 5vh;
-        font-size: 1.2em;
     }
     #everypay-secure-logos  {
         min-width: 20vw;
