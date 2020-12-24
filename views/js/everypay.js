@@ -1,11 +1,11 @@
 
 function addIDtoEverypayLogo() {
     let everypayLogo = document.querySelector('.payment-option label img[src="/modules/payment_everypay/everypay_logo.png"]');
-    if (!everypayLogo)
-         everypayLogo = document.querySelector('#payment-option-3-container label img');
+    if (!everypayLogo || typeof everypayLogo == 'undefined')
+        return;
     try {
         everypayLogo.setAttribute('id', 'everypay_logo');
-     } catch (e) {console.log(e)}
+     } catch (e) {}
 }
 
 
