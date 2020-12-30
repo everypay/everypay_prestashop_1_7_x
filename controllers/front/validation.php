@@ -58,6 +58,7 @@ class Payment_EverypayValidationModuleFrontController extends ModuleFrontControl
         }
 
         $ctn = $_REQUEST['everypayToken'];
+        unset($_REQUEST['everypayToken']);
 
         if(substr($ctn, 0, 4) !== "ctn_"){
             die($this->module->l('Unknown payment response. Please contact the website administrator.', 'validation'));
