@@ -274,10 +274,13 @@ class Payment_Everypay extends PaymentModule
         $billingAddress = $billingData->address1;
         $postalCode = $billingData->postcode;
         $city = $billingData->city;
+        $phone= !empty($billingData->phone)
+            ? $billingData->phone
+            : (!empty($billingData->phone_mobile) ? $billingData->phone_mobile : null);
 
         $paymentOpt = new PaymentOption();
         $paymentOpt->setCallToActionText($this->l('Pay with Credit/Debit Card'))
-                       ->setForm($this->generateForm($billingAddress, $postalCode, $city))
+                       ->setForm($this->generateForm($billingAddress, $postalCode, $city, $phone))
                        ->setAdditionalInformation($this->context->smarty->fetch('module:payment_everypay/views/templates/front/payment_infos.tpl'))
 					   ->setBinary(true);
 
@@ -299,7 +302,7 @@ class Payment_Everypay extends PaymentModule
         return false;
     }
 
-    protected function generateForm($billingAddress, $postalCode, $city)
+    protected function generateForm($billingAddress, $postalCode, $city, $phone)
     {
 		$cart = $this->context->cart;
 		$total = (float) $cart->getOrderTotal(true, Cart::BOTH);
@@ -316,7 +319,9 @@ class Payment_Everypay extends PaymentModule
             'installments' => $this->_calcInstallments($total),
             'billingAddress' => $billingAddress,
             'postalCode' => $postalCode,
-            'city' => $city
+            'city' => $city,
+            'email' => !empty($customer->email) ? $customer->email : null,
+            'phone' => $phone,
         ]);
 
         return $this->context->smarty->fetch('module:payment_everypay/views/templates/front/payment_form.tpl');

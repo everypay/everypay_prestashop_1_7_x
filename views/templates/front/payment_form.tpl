@@ -44,6 +44,14 @@
 			},
 		};
 
+		{if !empty($email)}
+			payload.data.email = "{$email}";
+		{/if}
+
+		{if !empty($phone)}
+			payload.data.phone = "{$phone}";
+		{/if}
+
 		if ({$installments})
 			payload.installments = calculate_installments({$installments});
 
