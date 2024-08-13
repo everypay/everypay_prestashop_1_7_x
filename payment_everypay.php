@@ -274,9 +274,7 @@ class Payment_Everypay extends PaymentModule
         $billingAddress = $billingData->address1;
         $postalCode = $billingData->postcode;
         $city = $billingData->city;
-        $phone= !empty($billingData->phone)
-            ? $billingData->phone
-            : (!empty($billingData->phone_mobile) ? $billingData->phone_mobile : null);
+        $phone = !empty($billingData->phone) ? $billingData->phone : null;
 
         $paymentOpt = new PaymentOption();
         $paymentOpt->setCallToActionText($this->l('Pay with Credit/Debit Card'))
@@ -305,6 +303,7 @@ class Payment_Everypay extends PaymentModule
     protected function generateForm($billingAddress, $postalCode, $city, $phone)
     {
 		$cart = $this->context->cart;
+        $customer = $this->context->customer;
 		$total = (float) $cart->getOrderTotal(true, Cart::BOTH);
 
 		$lang = ($this->context->language->iso_code == "el") ? "el" : "en";
