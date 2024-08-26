@@ -59,7 +59,7 @@ class Payment_Everypay extends PaymentModule
     {
         $this->name = 'payment_everypay';
         $this->tab = 'payments_gateways';
-        $this->version = '2.0.0';
+        $this->version = '2.2.0';
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
         $this->author = 'Everypay';
         $this->controllers = array('validation');
