@@ -303,7 +303,7 @@ class Payment_Everypay extends PaymentModule
     protected function generateForm($billingAddress, $postalCode, $city, $phone)
     {
 		$cart = $this->context->cart;
-        $customer = $this->context->customer;
+		$customer = $this->context->customer;
 		$total = (float) $cart->getOrderTotal(true, Cart::BOTH);
 
 		$lang = ($this->context->language->iso_code == "el") ? "el" : "en";
