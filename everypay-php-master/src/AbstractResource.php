@@ -138,7 +138,7 @@ abstract class AbstractResource
     {
         $client = self::$client ?: new CurlClient(self::$clientOptions);
         $client->setOption(CurlClient::TIMEOUT, 30);
-        $client->setOption(CurlClient::USER_AGENT, 'EveryPay PHP Library ' . Everypay::VERSION);
+        $client->setOption(CurlClient::USER_AGENT, 'EveryPay PHP Library - PrestaShop Plugin ' . Everypay::VERSION);
 
         return $client;
     }
