@@ -1,3 +1,6 @@
+Here you go — drop-in replacement for `modules/payment_everypay/controllers/front/validation.php` (description line unchanged):
+
+```php
 <?php
 /*
 * 2007-2015 PrestaShop
@@ -58,25 +61,26 @@ class Payment_EverypayValidationModuleFrontController extends ModuleFrontControl
         }
 
         $ctn = $_REQUEST['everypayToken'];
-        unset($_REQUEST['everypayToken']);
 
-        if(substr($ctn, 0, 4) !== "ctn_"){
+        if (substr($ctn, 0, 4) !== "ctn_") {
             die($this->module->l('Unknown payment response. Please contact the website administrator.', 'validation'));
         }
 
         // is cURL installed yet?
-        if (!function_exists('curl_init')){
+        if (!function_exists('curl_init')) {
             die($this->module->l('PHP cURL module is not installed. Please contact the website administrator.', 'validation'));
         }
 
         $customer = new Customer($cart->id_customer);
-        if (!Validate::isLoadedObject($customer))
+        if (!Validate::isLoadedObject($customer)) {
             Tools::redirect('index.php?controller=order&step=1');
+        }
 
         $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
 
-        if(Configuration::get('EVERYPAY_SANDBOX_MODE'))
+        if (Configuration::get('EVERYPAY_SANDBOX_MODE')) {
             Everypay::$isTest = true;
+        }
 
         Everypay::setApiKey(Configuration::get('EVERYPAY_SECRET_KEY'));
 
@@ -84,22 +88,46 @@ class Payment_EverypayValidationModuleFrontController extends ModuleFrontControl
         error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
         try {
+
             $payment = Payment::create(array(
-                "amount" => $total*100,
+                "amount" => $total * 100,
                 "currency" => "eur",
                 "token" => $ctn,
-                "description" => Configuration::get('PS_SHOP_NAME').' - Order #'.$cart->id,
+                "description" => Configuration::get('PS_SHOP_NAME') . ' - Order #' . $cart->id_address_invoice,
                 "max_installments" => $this->module->_calcInstallments($total)
             ));
-            $this->module->validateOrder($cart->id, 2, $total, $this->module->displayName, NULL, array(), $cart->id_currency, false, $customer->secure_key);
-            Tools::redirect('index.php?controller=order-confirmation&id_cart='.$cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key);
+
+            // Extract EveryPay transaction/charge identifier
+            $transactionId = null;
+            if (is_object($payment)) {
+                if (isset($payment->id)) {
+                    $transactionId = (string)$payment->id;
+                } elseif (isset($payment->payment_reference)) {
+                    $transactionId = (string)$payment->payment_reference;
+                } elseif (isset($payment->token)) {
+                    // Fallback if API returns token as identifier
+                    $transactionId = (string)$payment->token;
+                }
+            }
+
+            // Pass transaction_id to PrestaShop so it appears in BO → Orders → Payments
+            $extra_vars = array();
+            if ($transactionId) {
+                $extra_vars['transaction_id'] = $transactionId;
+            }
+
+            // Keep original paid status (2) and parameters
+            $this->module->validateOrder($cart->id, 2, $total, $this->module->displayName, NULL, $extra_vars, $cart->id_currency, false, $customer->secure_key);
+
+            Tools::redirect('index.php?controller=order-confirmation&id_cart=' . $cart->id . '&id_module=' . $this->module->id . '&id_order=' . $this->module->currentOrder . '&key=' . $customer->secure_key);
+
         } catch (Exception $e) {
 
             $this->context->smarty->assign(['error' => $e->getMessage()]);
 
             $controller = Configuration::get('PS_ORDER_PROCESS_TYPE') ? 'order-opc.php' : 'order.php';
-            $location = $this->context->link->getPageLink($controller).(strpos($controller, '?') !== false ? '&' : '?').
-                'step=3&error='.$e->getCode();
+            $location = $this->context->link->getPageLink($controller) . (strpos($controller, '?') !== false ? '&' : '?') .
+                'step=3&error=' . $e->getCode();
 
             Tools::redirect($location);
 
